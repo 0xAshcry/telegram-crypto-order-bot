@@ -340,6 +340,10 @@ Buka:
 http://localhost:3000/admin
 ```
 
+Preview dashboard:
+
+![Admin Dashboard](docs/assets/admin-dashboard.png)
+
 Fitur dashboard:
 - statistik order
 - filter status
