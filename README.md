@@ -107,7 +107,7 @@ telegram-crypto-order-bot/
 │   ├── app.ts
 │   └── server.ts
 ├── uploads/
-├── .env
+├── .env.example
 ├── package.json
 ├── tsconfig.json
 └── README.md
@@ -145,14 +145,24 @@ telegram-crypto-order-bot/
 
 ## Environment Variables
 
-Buat file `.env`:
+Project ini menyediakan file `.env.example` sebagai template konfigurasi.
+
+### Langkah setup env
+
+```bash
+cp .env.example .env
+```
+
+Lalu edit file `.env` dan sesuaikan nilainya.
+
+Isi `.env.example`:
 
 ```env
 PORT=3000
 NODE_ENV=development
-TELEGRAM_BOT_TOKEN=ISI_TOKEN_BOT_KAMU
+TELEGRAM_BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/crypto_order_db"
-ADMIN_TELEGRAM_IDS=6999175955
+ADMIN_TELEGRAM_IDS=6999175955,123456789
 ```
 
 Keterangan:
@@ -160,11 +170,9 @@ Keterangan:
 - `DATABASE_URL`: koneksi PostgreSQL
 - `ADMIN_TELEGRAM_IDS`: daftar Telegram ID admin, pisahkan dengan koma jika lebih dari satu
 
-Contoh:
-
-```env
-ADMIN_TELEGRAM_IDS=6999175955,123456789
-```
+Catatan:
+- jangan commit file `.env`
+- yang aman untuk dibagikan hanya `.env.example`
 
 ## Setup Local Development
 
@@ -195,9 +203,16 @@ docker run -d \
   postgres:16
 ```
 
-### 4. Isi file `.env`
+### 4. Buat file `.env` dari template
 
-Sesuaikan token Telegram dan admin ID.
+```bash
+cp .env.example .env
+```
+
+Lalu isi nilai yang diperlukan, terutama:
+- `TELEGRAM_BOT_TOKEN`
+- `DATABASE_URL`
+- `ADMIN_TELEGRAM_IDS`
 
 ### 5. Generate Prisma client dan migrate
 
