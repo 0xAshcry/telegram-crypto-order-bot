@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Crypto Order Bot</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0f172a;
+        --panel: #111827;
+        --panel-2: #1f2937;
+        --line: #334155;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --green: #16a34a;
+        --red: #dc2626;
+        --blue: #2563eb;
+        --yellow: #ca8a04;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      .header {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+      .title h1 { margin: 0 0 6px; font-size: 28px; }
+      .title p { margin: 0; color: var(--muted); }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .stat-value { font-size: 24px; font-weight: 700; }
+      .stat-label { color: var(--muted); font-size: 13px; }
+      .filters {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      input, select, textarea, button {
+        font: inherit;
+      }
+      input, select, textarea {
+        width: 100%;
+        background: var(--panel-2);
+        color: var(--text);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      textarea { min-height: 88px; resize: vertical; }
+      button {
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        cursor: pointer;
+        color: white;
+        background: var(--blue);
+      }
+      button.secondary { background: #475569; }
+      button.success { background: var(--green); }
+      button.danger { background: var(--red); }
+      button.warning { background: var(--yellow); color: #111827; }
+      button:disabled { opacity: 0.5; cursor: not-allowed; }
+      .grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 16px;
+      }
+      .order-list {
+        display: grid;
+        gap: 12px;
+      }
+      .order-item {
+        border: 1px solid var(--line);
+        background: var(--panel-2);
+        border-radius: 14px;
+        padding: 14px;
+      }
+      .order-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: start;
+        margin-bottom: 10px;
+      }
+      .order-title { font-weight: 700; }
+      .muted { color: var(--muted); }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid var(--line);
+      }
+      .badge.pending { background: rgba(202,138,4,0.12); color: #facc15; }
+      .badge.approved { background: rgba(22,163,74,0.12); color: #4ade80; }
+      .badge.rejected { background: rgba(220,38,38,0.12); color: #f87171; }
+      .meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 8px;
+        margin: 10px 0;
+      }
+      .meta div {
+        background: rgba(255,255,255,0.02);
+        border-radius: 10px;
+        padding: 10px;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .detail-empty {
+        color: var(--muted);
+        font-style: italic;
+      }
+      .log-list {
+        display: grid;
+        gap: 8px;
+      }
+      .log-item {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px;
+        background: var(--panel-2);
+      }
+      .status-bar {
+        margin-top: 8px;
+        color: var(--muted);
+      }
+      .proof-link {
+        color: #93c5fd;
+        text-decoration: none;
+      }
+      @media (max-width: 900px) {
+        .grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="title">
+          <h1>Admin Dashboard</h1>
+          <p>Monitor order, verifikasi pembayaran, approve/reject, dan lihat log admin.</p>
+        </div>
+        <div class="toolbar">
+          <button id="refreshBtn">Refresh data</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total order</div></div>
+        <div class="card"><div class="stat-value" id="statPending">0</div><div class="stat-label">Waiting verification</div></div>
+        <div class="card"><div class="stat-value" id="statApproved">0</div><div class="stat-label">Approved</div></div>
+        <div class="card"><div class="stat-value" id="statRejected">0</div><div class="stat-label">Rejected</div></div>
+      </div>
+
+      <div class="card filters">
+        <input id="searchInput" placeholder="Cari order id / username / coin / status" />
+        <select id="statusFilter">
+          <option value="ALL">Semua status</option>
+          <option value="WAITING_VERIFICATION">WAITING_VERIFICATION</option>
+          <option value="WAITING_PAYMENT">WAITING_PAYMENT</option>
+          <option value="APPROVED">APPROVED</option>
+          <option value="REJECTED">REJECTED</option>
+        </select>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Daftar order</h2>
+          <div id="orderList" class="order-list"></div>
+        </div>
+
+        <div class="card">
+          <h2>Detail order</h2>
+          <div id="detailPanel" class="detail-empty">Pilih salah satu order untuk melihat detail lengkap.</div>
+          <div class="status-bar" id="statusBar">Siap.</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/admin-assets/app.js"></script>
+  </body>
+</html>

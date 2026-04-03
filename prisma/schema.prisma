@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PaymentMethod {
+  QRIS
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REJECTED
+}
+
+enum OrderStatus {
+  WAITING_PAYMENT
+  WAITING_VERIFICATION
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+enum AdminActionType {
+  APPROVE
+  REJECT
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  telegramId String   @unique
+  username   String?
+  createdAt  DateTime @default(now())
+
+  orders     Order[]
+}
+
+model Order {
+  id                  Int            @id @default(autoincrement())
+  userId              Int
+  coinSymbol          String
+  rupiahAmount        Int
+  estimatedCoinAmount Float
+  paymentMethod       PaymentMethod
+  paymentStatus       PaymentStatus  @default(PENDING)
+  orderStatus         OrderStatus    @default(WAITING_PAYMENT)
+  proofImageUrl       String?
+  rejectReason        String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id])
+  adminActions AdminAction[]
+}
+
+model AdminAction {
+  id         Int             @id @default(autoincrement())
+  orderId    Int
+  adminName  String
+  actionType AdminActionType
+  notes      String?
+  createdAt  DateTime        @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
